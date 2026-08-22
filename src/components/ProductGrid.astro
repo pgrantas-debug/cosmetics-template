@@ -1,0 +1,172 @@
+---
+import ProductCard from './ProductCard.astro';
+import { products } from '../data/products';
+
+// Homepage teaser grid — bestsellers only, capped at 12, with a lightweight
+// client-side category filter (identical pattern to the shop page's filters,
+// just scoped to this smaller set).
+const bestsellers = products.filter((p) => p.tags.includes('bestseller') && p.stockStatus !== 'out_of_stock').slice(0, 12);
+
+const categories = Array.from(new Map(bestsellers.map((p) => [p.category, p.categoryLabel])).entries());
+---
+
+<section id="featured" class="products container">
+	<div class="products-head">
+		<p class="eyebrow">Best Sellers</p>
+		<h2>Loved again and again</h2>
+	</div>
+
+	<div class="filters" role="group" aria-label="Filter by category">
+		<button class="filter is-active" data-filter="all" aria-pressed="true">All</button>
+		{categories.map(([slug, label]) => (
+			<button class="filter" data-filter={slug} aria-pressed="false">{label}</button>
+		))}
+	</div>
+
+	<div class="grid" id="product-grid">
+		{bestsellers.map((p, i) => (
+			<div class="grid-item" data-category={p.category}>
+				<ProductCard
+					name={p.name}
+					brand={p.brand}
+					price={p.price}
+					oldPrice={p.oldPrice}
+					discount={p.discount}
+					image={p.image}
+					slug={p.slug}
+					categoryLabel={p.categoryLabel}
+					tags={p.tags}
+					stockQty={p.stockQty}
+					stockStatus={p.stockStatus}
+					eager={i < 4}
+				/>
+			</div>
+		))}
+	</div>
+
+	<div class="see-all">
+		<a href="/shop" class="see-all-btn">View all products ({products.length})</a>
+	</div>
+</section>
+
+<style>
+	.products {
+		padding-block: clamp(60px, 8vw, 110px);
+	}
+
+	.products-head {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		margin-bottom: clamp(28px, 4vw, 40px);
+	}
+
+	.products-head h2 {
+		font-family: var(--font-serif);
+		font-weight: 400;
+		font-size: clamp(28px, 3.6vw, 44px);
+		margin: 0;
+	}
+
+	.filters {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-bottom: clamp(30px, 4vw, 48px);
+		border-bottom: 1px solid var(--color-line);
+		padding-bottom: 22px;
+	}
+
+	.filter {
+		font-size: 12px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		padding: 8px 16px;
+		border: 1px solid var(--color-line-strong);
+		border-radius: 999px;
+		color: var(--color-ink-soft);
+		transition: all 0.2s var(--ease);
+	}
+
+	.filter:hover {
+		border-color: var(--color-ink);
+		color: var(--color-ink);
+	}
+
+	.filter.is-active {
+		background: var(--color-ink);
+		border-color: var(--color-ink);
+		color: var(--color-bg);
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: clamp(20px, 2.4vw, 36px);
+	}
+
+	.grid-item[hidden] {
+		display: none;
+	}
+
+	@media (max-width: 1024px) {
+		.grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	@media (max-width: 720px) {
+		.grid {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 16px;
+		}
+	}
+
+	.see-all {
+		display: flex;
+		justify-content: center;
+		margin-top: clamp(36px, 5vw, 56px);
+	}
+
+	.see-all-btn {
+		padding: 15px 38px;
+		border: 1px solid var(--color-line-strong);
+		border-radius: 999px;
+		font-size: 12px;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--color-ink);
+		transition: all 0.2s var(--ease);
+	}
+
+	.see-all-btn:hover {
+		background: var(--color-ink);
+		border-color: var(--color-ink);
+		color: var(--color-bg);
+	}
+</style>
+
+<script>
+	function initProductGridFilters() {
+		const filters = document.querySelectorAll<HTMLButtonElement>('#featured .filter');
+		const items = document.querySelectorAll<HTMLElement>('#featured .grid-item');
+
+		filters.forEach((btn) => {
+			btn.addEventListener('click', () => {
+				filters.forEach((b) => {
+					b.classList.remove('is-active');
+					b.setAttribute('aria-pressed', 'false');
+				});
+				btn.classList.add('is-active');
+				btn.setAttribute('aria-pressed', 'true');
+				const target = btn.dataset.filter;
+
+				items.forEach((item) => {
+					const show = target === 'all' || item.dataset.category === target;
+					item.hidden = !show;
+				});
+			});
+		});
+	}
+	initProductGridFilters();
+</script>

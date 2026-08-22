@@ -1,0 +1,396 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { products } from '../data/products';
+import { CATEGORY_LABELS } from '../data/categories';
+import { brandNameToSlug } from '../data/brands';
+
+// Sold-out items sink to the bottom, stable order otherwise.
+const sorted = [...products].sort((a, b) => Number(a.stockStatus === 'out_of_stock') - Number(b.stockStatus === 'out_of_stock'));
+
+const categories = Object.entries(CATEGORY_LABELS);
+---
+
+<BaseLayout title="Shop — LUMÉ" description="Browse the full LUMÉ collection — skincare, makeup, hair care, perfume, home fragrance and gift sets.">
+	<div class="container shop-page">
+		<div class="shop-head">
+			<p class="eyebrow">Shop</p>
+			<h1>The full collection</h1>
+			<p class="shop-lead">{products.length} products, curated across face, body, hair, makeup and fragrance.</p>
+		</div>
+
+		<div class="shop-search">
+			<svg width="16" height="16" viewBox="0 0 19 19" fill="none" stroke="currentColor" stroke-width="1.3">
+				<circle cx="8.2" cy="8.2" r="6.5" />
+				<line x1="13" y1="13" x2="18" y2="18" />
+			</svg>
+			<input type="text" id="shop-search-input" placeholder="Search products or brands…" autocomplete="off" />
+			<button type="button" id="shop-search-clear" hidden>Clear</button>
+		</div>
+
+		<div class="brand-chip" id="brand-chip" hidden>
+			<span>Brand: <strong id="brand-chip-name"></strong></span>
+			<button type="button" id="brand-chip-clear" aria-label="Clear brand filter">✕</button>
+		</div>
+
+		<button type="button" class="featured-toggle" id="featured-toggle" aria-pressed="false">
+			<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.6L22 9.3l-5 4.9 1.2 7.1L12 17.9l-6.2 3.4L7 14.2 2 9.3l7.1-.7z" /></svg>
+			Editor's picks only
+		</button>
+
+		<div class="filters" role="group" aria-label="Filter by category" id="shop-filters">
+			<button class="filter is-active" data-filter="all" aria-pressed="true">All</button>
+			{categories.map(([slug, label]) => (
+				<button class="filter" data-filter={slug} aria-pressed="false">{label}</button>
+			))}
+		</div>
+
+		<p class="result-count" id="result-count">{products.length} products</p>
+
+		<div class="grid" id="product-grid">
+			{sorted.map((p, i) => (
+				<div
+					class="grid-item"
+					data-category={p.category}
+					data-name={p.name.toLowerCase()}
+					data-brand={p.brand.toLowerCase()}
+					data-brand-slug={brandNameToSlug(p.brand) ?? ''}
+					data-featured={p.tags.includes('featured') ? '1' : ''}
+				>
+					<ProductCard
+						name={p.name}
+						brand={p.brand}
+						price={p.price}
+						oldPrice={p.oldPrice}
+						discount={p.discount}
+						image={p.image}
+						slug={p.slug}
+						categoryLabel={p.categoryLabel}
+						tags={p.tags}
+						stockQty={p.stockQty}
+						stockStatus={p.stockStatus}
+						eager={i < 4}
+					/>
+				</div>
+			))}
+		</div>
+
+		<p class="no-results" id="no-results" hidden>No products match these filters.</p>
+	</div>
+</BaseLayout>
+
+<style>
+	.shop-page {
+		padding-block: clamp(28px, 4vw, 44px) clamp(80px, 9vw, 120px);
+	}
+
+	.shop-head {
+		max-width: 60ch;
+		margin-bottom: clamp(30px, 4vw, 44px);
+	}
+
+	.shop-head h1 {
+		font-family: var(--font-serif);
+		font-weight: 400;
+		font-size: clamp(32px, 4.4vw, 52px);
+		margin: 10px 0 12px;
+	}
+
+	.shop-lead {
+		color: var(--color-ink-soft);
+		line-height: 1.6;
+	}
+
+	.shop-search {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-bottom: 20px;
+		padding-bottom: 16px;
+		border-bottom: 1px solid var(--color-line);
+	}
+
+	.shop-search svg {
+		flex-shrink: 0;
+		color: var(--color-ink-soft);
+	}
+
+	#shop-search-input {
+		flex: 1;
+		border: none;
+		background: transparent;
+		font-size: 15px;
+		padding: 6px 0;
+		color: var(--color-ink);
+	}
+
+	#shop-search-input:focus {
+		outline: none;
+	}
+
+	#shop-search-clear {
+		font-size: 11px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-ink-soft);
+		white-space: nowrap;
+	}
+
+	#shop-search-clear:hover {
+		color: var(--color-ink);
+	}
+
+	.brand-chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		margin-bottom: 20px;
+		padding: 8px 14px;
+		border: 1px solid var(--color-line-strong);
+		border-radius: 999px;
+		font-size: 12.5px;
+		color: var(--color-ink-soft);
+	}
+
+	.brand-chip strong {
+		color: var(--color-ink);
+		font-weight: 600;
+	}
+
+	.brand-chip[hidden] {
+		display: none;
+	}
+
+	#brand-chip-clear {
+		color: var(--color-ink-soft);
+		font-size: 13px;
+		line-height: 1;
+		transition: color 0.2s var(--ease);
+	}
+
+	#brand-chip-clear:hover {
+		color: var(--color-ink);
+	}
+
+	.featured-toggle {
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
+		margin-bottom: 20px;
+		margin-left: 10px;
+		padding: 8px 16px;
+		border: 1px solid var(--color-line-strong);
+		border-radius: 999px;
+		font-size: 12px;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--color-ink-soft);
+		transition: all 0.2s var(--ease);
+	}
+
+	.featured-toggle svg {
+		color: #c9a35a;
+		flex-shrink: 0;
+	}
+
+	.featured-toggle:hover {
+		border-color: var(--color-ink);
+		color: var(--color-ink);
+	}
+
+	.featured-toggle[aria-pressed='true'] {
+		background: var(--color-ink);
+		border-color: var(--color-ink);
+		color: var(--color-bg);
+	}
+
+	.featured-toggle[aria-pressed='true'] svg {
+		color: #e4c47a;
+	}
+
+	.filters {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-bottom: 18px;
+		border-bottom: 1px solid var(--color-line);
+		padding-bottom: 22px;
+	}
+
+	.filter {
+		font-size: 12px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		padding: 8px 16px;
+		border: 1px solid var(--color-line-strong);
+		border-radius: 999px;
+		color: var(--color-ink-soft);
+		transition: all 0.2s var(--ease);
+	}
+
+	.filter:hover {
+		border-color: var(--color-ink);
+		color: var(--color-ink);
+	}
+
+	.filter.is-active {
+		background: var(--color-ink);
+		border-color: var(--color-ink);
+		color: var(--color-bg);
+	}
+
+	.result-count {
+		font-size: 12.5px;
+		color: var(--color-ink-soft);
+		margin-bottom: clamp(20px, 3vw, 30px);
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: clamp(20px, 2.4vw, 36px);
+	}
+
+	.grid-item[hidden] {
+		display: none;
+	}
+
+	.no-results {
+		text-align: center;
+		padding-block: 60px;
+		color: var(--color-ink-soft);
+	}
+
+	.no-results[hidden] {
+		display: none;
+	}
+
+	@media (max-width: 1024px) {
+		.grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	@media (max-width: 720px) {
+		.grid {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 16px;
+		}
+	}
+</style>
+
+<script>
+	function initShopPage() {
+		const filters = document.querySelectorAll<HTMLButtonElement>('#shop-filters .filter');
+		const items = document.querySelectorAll<HTMLElement>('#product-grid .grid-item');
+		const searchInput = document.getElementById('shop-search-input') as HTMLInputElement | null;
+		const searchClear = document.getElementById('shop-search-clear');
+		const brandChip = document.getElementById('brand-chip');
+		const brandChipName = document.getElementById('brand-chip-name');
+		const brandChipClear = document.getElementById('brand-chip-clear');
+		const featuredToggle = document.getElementById('featured-toggle');
+		const resultCount = document.getElementById('result-count');
+		const noResults = document.getElementById('no-results');
+
+		const state = {
+			category: 'all',
+			brandSlug: '' as string,
+			featuredOnly: false,
+			query: '',
+		};
+
+		function apply() {
+			let visible = 0;
+			items.forEach((item) => {
+				const matchesCategory = state.category === 'all' || item.dataset.category === state.category;
+				const matchesBrand = !state.brandSlug || item.dataset.brandSlug === state.brandSlug;
+				const matchesFeatured = !state.featuredOnly || item.dataset.featured === '1';
+				const q = state.query.trim().toLowerCase();
+				const matchesQuery = !q || (item.dataset.name ?? '').includes(q) || (item.dataset.brand ?? '').includes(q);
+				const show = matchesCategory && matchesBrand && matchesFeatured && matchesQuery;
+				item.hidden = !show;
+				if (show) visible += 1;
+			});
+			if (resultCount) resultCount.textContent = `${visible} product${visible === 1 ? '' : 's'}`;
+			if (noResults) noResults.hidden = visible > 0;
+		}
+
+		filters.forEach((btn) => {
+			btn.addEventListener('click', () => {
+				filters.forEach((b) => {
+					b.classList.remove('is-active');
+					b.setAttribute('aria-pressed', 'false');
+				});
+				btn.classList.add('is-active');
+				btn.setAttribute('aria-pressed', 'true');
+				state.category = btn.dataset.filter ?? 'all';
+				apply();
+			});
+		});
+
+		searchInput?.addEventListener('input', () => {
+			state.query = searchInput.value;
+			if (searchClear) searchClear.hidden = state.query.length === 0;
+			apply();
+		});
+
+		searchClear?.addEventListener('click', () => {
+			if (searchInput) searchInput.value = '';
+			state.query = '';
+			searchClear.hidden = true;
+			apply();
+		});
+
+		brandChipClear?.addEventListener('click', () => {
+			state.brandSlug = '';
+			brandChip?.setAttribute('hidden', '');
+			apply();
+		});
+
+		featuredToggle?.addEventListener('click', () => {
+			state.featuredOnly = !state.featuredOnly;
+			featuredToggle.setAttribute('aria-pressed', String(state.featuredOnly));
+			apply();
+		});
+
+		// Read initial filters from the URL (?category=, ?brand=, ?featured=1)
+		// so links from the header/homepage land pre-filtered.
+		const params = new URLSearchParams(window.location.search);
+		const initialCategory = params.get('category');
+		if (initialCategory) {
+			const btn = Array.from(filters).find((f) => f.dataset.filter === initialCategory);
+			if (btn) {
+				filters.forEach((b) => {
+					b.classList.remove('is-active');
+					b.setAttribute('aria-pressed', 'false');
+				});
+				btn.classList.add('is-active');
+				btn.setAttribute('aria-pressed', 'true');
+				state.category = initialCategory;
+			}
+		}
+		const initialBrand = params.get('brand');
+		if (initialBrand) {
+			state.brandSlug = initialBrand;
+			const brandItem = Array.from(items).find((i) => i.dataset.brandSlug === initialBrand);
+			if (brandItem && brandChip && brandChipName) {
+				const brandLabel = (brandItem.dataset.brand ?? '').replace(/\b\w/g, (c) => c.toUpperCase());
+				brandChipName.textContent = brandLabel;
+				brandChip.removeAttribute('hidden');
+			}
+		}
+		if (params.get('featured') === '1') {
+			state.featuredOnly = true;
+			featuredToggle?.setAttribute('aria-pressed', 'true');
+		}
+		const initialQuery = params.get('q');
+		if (initialQuery && searchInput) {
+			searchInput.value = initialQuery;
+			state.query = initialQuery;
+			searchClear?.removeAttribute('hidden');
+		}
+
+		apply();
+	}
+	initShopPage();
+</script>

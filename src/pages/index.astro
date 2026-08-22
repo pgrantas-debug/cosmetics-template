@@ -1,17 +1,23 @@
 ---
-
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import ProductGrid from '../components/ProductGrid.astro';
+import BrandStrip from '../components/BrandStrip.astro';
+import AboutTeaser from '../components/AboutTeaser.astro';
+import EditorsPicks from '../components/EditorsPicks.astro';
+import FollowUs from '../components/FollowUs.astro';
+import Newsletter from '../components/Newsletter.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout
+	title="LUMÉ — Curated Skincare & Beauty"
+	description="LUMÉ is a curated cosmetics e-shop template — skincare, makeup, hair care and fragrance from independent labs we trust."
+>
+	<Hero />
+	<ProductGrid />
+	<BrandStrip />
+	<AboutTeaser />
+	<EditorsPicks />
+	<FollowUs />
+	<Newsletter />
+</BaseLayout>

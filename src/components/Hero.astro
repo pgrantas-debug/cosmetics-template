@@ -1,0 +1,258 @@
+---
+// No stock hero photography ships with this template — the hero panel is
+// built entirely from CSS (a soft gradient) plus one product photo from the
+// catalog, so the template stays fully self-contained.
+---
+
+<section class="hero">
+	<div class="container hero-grid">
+		<div class="hero-copy">
+			<p class="eyebrow">Curated Skincare &amp; Beauty</p>
+			<h1>Beauty, <em>thoughtfully</em> chosen.</h1>
+			<p class="hero-lead">
+				Forty pieces from independent labs and studios we trust — skincare, makeup, hair and
+				fragrance, each one chosen for how it actually performs.
+			</p>
+			<div class="hero-actions">
+				<a href="/shop" class="cta">
+					<span>Discover the collection</span>
+					<svg width="15" height="10" viewBox="0 0 15 10" fill="none" stroke="currentColor" stroke-width="1.2">
+						<path d="M0 5h13M9 1l4 4-4 4" />
+					</svg>
+				</a>
+				<nav class="quick-links" aria-label="Quick category links">
+					<a href="/shop?category=veido-prieziura">Face</a>
+					<a href="/shop?category=plauku-prieziuros-priemones">Hair</a>
+					<a href="/shop?category=kvepalai">Perfume</a>
+					<a href="/shop">Everything</a>
+				</nav>
+			</div>
+		</div>
+
+		<div class="hero-visual">
+			<div class="hero-visual-glow">
+				<img
+					src="/images/products/emmanuelle-jane-paris-harmonie-edp.webp"
+					alt=""
+					width="718"
+					height="718"
+					fetchpriority="high"
+				/>
+			</div>
+		</div>
+	</div>
+
+	<a href="#featured" class="scroll-cue" aria-label="Scroll down">
+		<span class="scroll-line"></span>
+		<span>Scroll</span>
+	</a>
+</section>
+
+<style>
+	.hero {
+		position: relative;
+		background: linear-gradient(180deg, #f5efe4 0%, var(--color-bg) 78%);
+		padding-top: calc(var(--nav-h) + clamp(20px, 5vw, 60px));
+		padding-bottom: clamp(50px, 7vw, 90px);
+	}
+
+	.hero-grid {
+		display: grid;
+		grid-template-columns: 1.05fr 0.95fr;
+		gap: clamp(30px, 5vw, 70px);
+		align-items: center;
+	}
+
+	.hero-copy {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 20px;
+	}
+
+	.hero-copy h1 {
+		font-family: var(--font-serif);
+		font-weight: 400;
+		font-size: clamp(38px, 5.4vw, 68px);
+		line-height: 1.08;
+		margin: 4px 0 0;
+	}
+
+	.hero-copy h1 em {
+		font-style: italic;
+	}
+
+	.hero-lead {
+		color: var(--color-ink-soft);
+		font-size: clamp(15px, 1.2vw, 17px);
+		line-height: 1.65;
+		max-width: 46ch;
+	}
+
+	.hero-actions {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: clamp(20px, 3vw, 28px);
+		margin-top: 6px;
+	}
+
+	.cta {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		padding: 14px 34px;
+		border: 1px solid var(--color-ink);
+		border-radius: 999px;
+		font-size: 13px;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		transition: background-color 0.3s var(--ease), color 0.3s var(--ease);
+	}
+
+	.cta svg {
+		transition: transform 0.3s var(--ease);
+	}
+
+	.cta:hover {
+		background: var(--color-ink);
+		color: var(--color-bg);
+	}
+
+	.cta:hover svg {
+		transform: translateX(3px);
+	}
+
+	.quick-links {
+		display: flex;
+		align-items: center;
+		gap: clamp(14px, 2.4vw, 26px);
+		flex-wrap: wrap;
+	}
+
+	.quick-links a {
+		position: relative;
+		font-size: 12.5px;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--color-ink-soft);
+		padding-bottom: 3px;
+		transition: color 0.2s;
+	}
+
+	.quick-links a:not(:last-child)::after {
+		content: '';
+		position: absolute;
+		right: calc(-1 * clamp(7px, 1.2vw, 13px));
+		top: 50%;
+		transform: translateY(-50%);
+		width: 3px;
+		height: 3px;
+		border-radius: 50%;
+		background: var(--color-line-strong);
+	}
+
+	.quick-links a:hover {
+		color: var(--color-ink);
+	}
+
+	.hero-visual {
+		display: flex;
+		justify-content: center;
+	}
+
+	.hero-visual-glow {
+		position: relative;
+		width: 100%;
+		max-width: 460px;
+		aspect-ratio: 1 / 1;
+		border-radius: 28px;
+		background:
+			radial-gradient(60% 55% at 50% 40%, #f4e7c8 0%, transparent 72%),
+			var(--color-bg-alt);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 14%;
+	}
+
+	.hero-visual-glow img {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		filter: drop-shadow(0 22px 30px rgba(26, 24, 22, 0.16));
+	}
+
+	.scroll-cue {
+		position: absolute;
+		bottom: 20px;
+		left: 50%;
+		transform: translateX(-50%);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 8px;
+		font-size: 10px;
+		letter-spacing: 0.2em;
+		color: var(--color-ink-soft);
+		opacity: 0.7;
+	}
+
+	.scroll-line {
+		width: 1px;
+		height: 26px;
+		background: var(--color-line-strong);
+		overflow: hidden;
+		position: relative;
+	}
+
+	.scroll-line::after {
+		content: '';
+		position: absolute;
+		top: -100%;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: var(--color-ink);
+		animation: scroll-drip 1.8s ease-in-out infinite;
+	}
+
+	@keyframes scroll-drip {
+		0% {
+			top: -100%;
+		}
+		60%,
+		100% {
+			top: 100%;
+		}
+	}
+
+	@media (max-width: 860px) {
+		.hero-grid {
+			grid-template-columns: 1fr;
+			text-align: center;
+		}
+
+		.hero-copy {
+			align-items: center;
+		}
+
+		.hero-actions {
+			align-items: center;
+		}
+
+		.hero-visual {
+			order: -1;
+		}
+
+		.hero-visual-glow {
+			max-width: 300px;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.scroll-cue {
+			display: none;
+		}
+	}
+</style>

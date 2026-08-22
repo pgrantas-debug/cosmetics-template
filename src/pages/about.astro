@@ -1,0 +1,87 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="About — LUMÉ" description="LUMÉ is a curated cosmetics collection built by a small team who test everything before it goes on the shelf.">
+	<div class="container about-page">
+		<div class="about-head">
+			<p class="eyebrow">About LUMÉ</p>
+			<h1>A collection, not a catalog.</h1>
+		</div>
+
+		<div class="about-body">
+			<p class="lead">
+				LUMÉ began as a simple idea: a beauty shop stocked only with things we'd genuinely
+				recommend to a friend, not everything a supplier could ship us.
+			</p>
+			<p>
+				We're a small team of people who spend an unreasonable amount of time reading
+				ingredient lists, testing formulas on ourselves, and arguing about which serum
+				actually earns its price. Every brand in the collection passed that filter before it
+				ever reached the shop — no sponsored placements, no filler products to round out a
+				category.
+			</p>
+			<p>
+				That means the collection stays small on purpose. Forty pieces today, chosen across
+				skincare, makeup, hair and fragrance, each one doing a specific job well rather than
+				trying to be everything to everyone. We'd rather stock ten products we trust than a
+				hundred we're indifferent to.
+			</p>
+			<p>
+				Editor's Picks — the badge you'll see scattered through the shop — marks whatever our
+				team is currently reaching for ourselves. It changes as we test new arrivals and
+				re-evaluate old favourites, so it's less a permanent hall of fame and more a running
+				, honest opinion.
+			</p>
+			<p class="note">
+				A quick note for the curious: LUMÉ is a demo storefront template — a working example
+				of the kind of e-shop we build for clients, shown here with a fictional brand and a
+				sample product catalog.
+			</p>
+		</div>
+	</div>
+</BaseLayout>
+
+<style>
+	.about-page {
+		padding-block: clamp(28px, 4vw, 44px) clamp(90px, 10vw, 130px);
+	}
+
+	.about-head {
+		max-width: 60ch;
+		margin-bottom: clamp(40px, 6vw, 64px);
+	}
+
+	.about-head h1 {
+		font-family: var(--font-serif);
+		font-weight: 400;
+		font-size: clamp(32px, 4.6vw, 54px);
+		margin: 10px 0 0;
+	}
+
+	.about-body {
+		max-width: 640px;
+	}
+
+	.about-body .lead {
+		font-family: var(--font-serif);
+		font-style: italic;
+		font-size: clamp(19px, 2vw, 23px);
+		line-height: 1.5;
+		margin: 0 0 24px;
+	}
+
+	.about-body p {
+		color: var(--color-ink-soft);
+		line-height: 1.8;
+		margin: 0 0 22px;
+		font-size: 15.5px;
+	}
+
+	.about-body .note {
+		margin-top: 36px;
+		padding-top: 24px;
+		border-top: 1px solid var(--color-line);
+		font-size: 13px;
+	}
+</style>

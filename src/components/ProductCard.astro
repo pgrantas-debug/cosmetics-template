@@ -1,0 +1,314 @@
+---
+interface Props {
+	name: string;
+	brand: string;
+	price: number;
+	oldPrice?: number | null;
+	discount?: number | null;
+	image: string;
+	slug: string;
+	categoryLabel: string;
+	tags?: string[];
+	stockQty?: number | null;
+	stockStatus?: 'in_stock' | 'low_stock' | 'out_of_stock';
+	variant?: 'cover' | 'shadow' | 'glow';
+	accent?: string;
+	eager?: boolean;
+}
+
+const {
+	name,
+	brand,
+	price,
+	oldPrice,
+	discount,
+	image,
+	slug,
+	categoryLabel,
+	tags = [],
+	stockQty = null,
+	stockStatus = 'in_stock',
+	variant = 'shadow',
+	accent = '#efe8dd',
+	eager = false,
+} = Astro.props;
+
+const href = `/product/${slug}`;
+const isFeatured = tags.includes('featured');
+const isOutOfStock = stockStatus === 'out_of_stock';
+const isLowStock = stockStatus === 'low_stock' && !!stockQty;
+---
+
+<article class={`card${isOutOfStock ? ' is-sold-out' : ''}`}>
+	<div class={`card-media variant-${variant}`} style={variant === 'glow' ? `--accent: ${accent}` : undefined}>
+		<a href={href} class="card-media-link" aria-label={name}>
+			<img
+				src={image}
+				alt={name}
+				loading={eager ? 'eager' : 'lazy'}
+				decoding={eager ? 'sync' : 'async'}
+				fetchpriority={eager ? 'high' : undefined}
+				width="630"
+				height="630"
+			/>
+		</a>
+		<div class="badges-top">
+			{isOutOfStock ? (
+				<span class="badge badge-soldout">Sold out</span>
+			) : (
+				discount ? <span class="badge">-{discount}%</span> : null
+			)}
+		</div>
+		<button
+			class="add-btn"
+			data-add-to-cart
+			data-slug={slug}
+			data-name={name}
+			data-brand={brand}
+			data-price={price}
+			data-image={image}
+			aria-label={`Add ${name} to cart`}
+			disabled={isOutOfStock}
+		>
+			<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+				<path d="M6 8h12l-1 12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 8z" stroke-linejoin="round" />
+				<path d="M9 8V6a3 3 0 0 1 6 0v2" stroke-linecap="round" />
+			</svg>
+			<span data-add-label class="sr-only">Add to cart</span>
+		</button>
+	</div>
+	{isFeatured && !isOutOfStock ? (
+		<a href="/shop?featured=1" class="badge-featured" title="Editor's pick">
+			<svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.6L22 9.3l-5 4.9 1.2 7.1L12 17.9l-6.2 3.4L7 14.2 2 9.3l7.1-.7z" /></svg>
+			Editor's Pick
+		</a>
+	) : null}
+	<a href={href} class="card-body">
+		<p class="card-cat">{categoryLabel}</p>
+		<p class="card-name">{brand} — {name}</p>
+		<p class="card-price">
+			<span class="price-now">{price.toFixed(2)}<span class="eur-sign">€</span></span>
+			{oldPrice ? <span class="price-old">{oldPrice.toFixed(2)}<span class="eur-sign">€</span></span> : null}
+			{isLowStock ? <span class="stock-note">Only {stockQty} left</span> : null}
+		</p>
+	</a>
+</article>
+
+<style>
+	.card {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+	}
+
+	.card-media {
+		position: relative;
+		aspect-ratio: 1 / 1;
+		background: var(--color-bg);
+		overflow: hidden;
+	}
+
+	.card-media-link {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	.card-media img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 0.6s var(--ease);
+	}
+
+	.card:hover .card-media img {
+		transform: scale(1.045);
+	}
+
+	.card-media.variant-shadow {
+		background: var(--color-bg);
+		border-radius: 14px;
+		overflow: hidden;
+	}
+
+	.card-media.variant-glow {
+		padding: 12%;
+		background:
+			radial-gradient(60% 55% at 50% 42%, var(--accent, #efe8dd) 0%, transparent 72%),
+			var(--color-bg-alt);
+	}
+
+	.card-media.variant-glow img {
+		object-fit: contain;
+		filter: drop-shadow(0 12px 14px rgba(26, 24, 22, 0.14));
+		transition: transform 0.6s var(--ease), filter 0.6s var(--ease);
+	}
+
+	.card:hover .card-media.variant-glow img {
+		filter: drop-shadow(0 16px 18px rgba(26, 24, 22, 0.18));
+	}
+
+	.badges-top {
+		position: absolute;
+		top: 12px;
+		left: 12px;
+		z-index: 2;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 6px;
+	}
+
+	.badge {
+		display: inline-flex;
+		align-items: center;
+		font-size: 10.5px;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		white-space: nowrap;
+		padding: 4px 10px;
+		background: color-mix(in srgb, var(--color-bg) 88%, transparent);
+		backdrop-filter: blur(2px);
+		color: var(--color-ink);
+		border: 1px solid var(--color-line);
+		border-radius: 999px;
+		pointer-events: none;
+	}
+
+	.badge-featured {
+		align-self: flex-start;
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		font-size: 9.5px;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+		white-space: nowrap;
+		padding: 3px 8px;
+		margin: 4px 0 -4px -4px;
+		background: transparent;
+		color: var(--color-ink-soft);
+		border: 1px solid var(--color-line);
+		border-radius: 999px;
+		transition: color 0.2s, border-color 0.2s;
+	}
+
+	.badge-featured:hover,
+	.badge-featured:focus-visible {
+		color: var(--color-ink);
+		border-color: var(--color-ink-soft);
+	}
+
+	.badge-featured svg {
+		color: #c9a35a;
+		flex-shrink: 0;
+	}
+
+	.add-btn {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		width: 34px;
+		height: 34px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--color-bg);
+		border: 1px solid var(--color-line-strong);
+		border-radius: 50%;
+		opacity: 0;
+		transform: translateY(-4px);
+		transition: opacity 0.2s var(--ease), transform 0.2s var(--ease), background-color 0.2s, color 0.2s;
+	}
+
+	.card-media:hover .add-btn,
+	.add-btn:focus-visible {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	.add-btn:hover,
+	.add-btn.is-added {
+		background: var(--color-ink);
+		color: var(--color-bg);
+		border-color: var(--color-ink);
+	}
+
+	.card-body {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.card-cat {
+		font-size: 10.5px;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--color-ink-soft);
+	}
+
+	.card-name {
+		font-size: 14px;
+		line-height: 1.4;
+		color: var(--color-ink);
+	}
+
+	.card-price {
+		display: flex;
+		align-items: baseline;
+		gap: 8px;
+		margin-top: 2px;
+		flex-wrap: wrap;
+	}
+
+	.price-now {
+		font-family: var(--font-serif);
+		font-size: 16px;
+	}
+
+	.price-old {
+		font-size: 13px;
+		color: var(--color-ink-soft);
+		text-decoration: line-through;
+	}
+
+	.eur-sign {
+		font-family: var(--font-sans);
+		margin-left: 0.15em;
+	}
+
+	.stock-note {
+		font-size: 11px;
+		letter-spacing: 0.02em;
+		color: #b5482f;
+	}
+
+	.card.is-sold-out .card-media img {
+		filter: grayscale(0.6);
+		opacity: 0.55;
+	}
+
+	.card.is-sold-out .card-name,
+	.card.is-sold-out .price-now {
+		color: var(--color-ink-soft);
+	}
+
+	.badge-soldout {
+		background: var(--color-ink);
+		color: var(--color-bg);
+		border-color: var(--color-ink);
+	}
+
+	.add-btn:disabled {
+		opacity: 0.35;
+		cursor: not-allowed;
+		pointer-events: none;
+	}
+
+	@media (max-width: 720px) {
+		.add-btn {
+			opacity: 1;
+			transform: none;
+		}
+	}
+</style>

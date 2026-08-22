@@ -1,0 +1,419 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { products } from '../../data/products';
+import { getRelatedProducts } from '../../lib/related';
+
+export function getStaticPaths() {
+	return products.map((p) => ({ params: { slug: p.slug }, props: { product: p } }));
+}
+
+const { product } = Astro.props;
+const related = getRelatedProducts(product, products, 4);
+const isOutOfStock = product.stockStatus === 'out_of_stock';
+const isLowStock = product.stockStatus === 'low_stock' && !!product.stockQty;
+---
+
+<BaseLayout title={`${product.name} — LUMÉ`} description={`${product.brand} ${product.name} — shop it on LUMÉ.`}>
+	<div class="container product-page">
+		<nav class="breadcrumbs" aria-label="Breadcrumb">
+			<a href="/">Home</a>
+			<span>/</span>
+			<a href={`/shop?category=${product.category}`}>{product.categoryLabel}</a>
+			<span>/</span>
+			<span class="current">{product.name}</span>
+		</nav>
+
+		<div class="product-grid">
+			<div class={`product-media${isOutOfStock ? ' is-sold-out' : ''}`}>
+				<img src={product.image} alt={product.name} width="630" height="630" />
+				<div class="badges-top">
+					{isOutOfStock ? (
+						<span class="badge badge-soldout">Sold out</span>
+					) : (
+						product.discount ? <span class="badge">-{product.discount}%</span> : null
+					)}
+				</div>
+			</div>
+
+			<div class="product-info">
+				<p class="eyebrow">{product.categoryLabel}</p>
+				<h1>{product.brand}</h1>
+				<p class="product-name">{product.name}</p>
+
+				<p class="product-price">
+					<span class="price-now">{product.price.toFixed(2)}<span class="eur-sign">€</span></span>
+					{product.oldPrice ? <span class="price-old">{product.oldPrice.toFixed(2)}<span class="eur-sign">€</span></span> : null}
+				</p>
+
+				{isLowStock ? <p class="stock-note">Only {product.stockQty} left</p> : null}
+
+				{!isOutOfStock ? (
+					<div class="qty-picker" id="qty-picker">
+						<button type="button" class="qty-btn" data-qty-step="dec" aria-label="Decrease quantity">−</button>
+						<span id="qty-value">1</span>
+						<button type="button" class="qty-btn" data-qty-step="inc" aria-label="Increase quantity">+</button>
+					</div>
+				) : null}
+
+				<button
+					class="add-to-cart"
+					id="add-to-cart-btn"
+					data-slug={product.slug}
+					data-name={product.name}
+					data-brand={product.brand}
+					data-price={product.price}
+					data-image={product.image}
+					disabled={isOutOfStock}
+				>
+					<span data-add-label>{isOutOfStock ? 'Sold out' : 'Add to cart'}</span>
+				</button>
+
+				<div class="product-meta">
+					<div class="meta-row">
+						<span>Shipping</span>
+						<span>2–4 business days</span>
+					</div>
+					<div class="meta-row">
+						<span>Free shipping</span>
+						<span>on orders over €99</span>
+					</div>
+					<div class="meta-row">
+						<span>Returns</span>
+						<span>30-day return window</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<section class="description">
+			<p class="eyebrow">Description</p>
+			<div class="description-body">
+				<p>{product.description}</p>
+			</div>
+		</section>
+
+		{related.length > 0 && (
+			<section class="related">
+				<p class="eyebrow">You may also like</p>
+				<div class="related-grid">
+					{related.map((p) => (
+						<ProductCard
+							name={p.name}
+							brand={p.brand}
+							price={p.price}
+							oldPrice={p.oldPrice}
+							discount={p.discount}
+							image={p.image}
+							slug={p.slug}
+							categoryLabel={p.categoryLabel}
+							tags={p.tags}
+							stockQty={p.stockQty}
+							stockStatus={p.stockStatus}
+						/>
+					))}
+				</div>
+			</section>
+		)}
+	</div>
+
+	<script>
+		import { addToCart } from '../../scripts/cart.js';
+
+		function initProductPage() {
+			const qtyValueEl = document.getElementById('qty-value');
+			const addBtn = document.getElementById('add-to-cart-btn') as HTMLButtonElement | null;
+			let qty = 1;
+
+			document.getElementById('qty-picker')?.addEventListener('click', (e) => {
+				const target = e.target as HTMLElement;
+				if (target.closest('[data-qty-step="inc"]')) {
+					qty += 1;
+				} else if (target.closest('[data-qty-step="dec"]')) {
+					qty = Math.max(1, qty - 1);
+				} else {
+					return;
+				}
+				if (qtyValueEl) qtyValueEl.textContent = String(qty);
+			});
+
+			addBtn?.addEventListener('click', () => {
+				const { slug, name, brand, price, image } = addBtn.dataset;
+				if (!slug) return;
+				addToCart({ slug, name, brand, price: parseFloat(price ?? '0'), image }, qty);
+
+				const label = addBtn.querySelector('[data-add-label]') ?? addBtn;
+				const original = label.textContent;
+				label.textContent = qty > 1 ? `Added ✓ (${qty})` : 'Added ✓';
+				addBtn.classList.add('is-added');
+				setTimeout(() => {
+					label.textContent = original;
+					addBtn.classList.remove('is-added');
+				}, 1400);
+
+				qty = 1;
+				if (qtyValueEl) qtyValueEl.textContent = '1';
+			});
+		}
+
+		initProductPage();
+	</script>
+</BaseLayout>
+
+<style>
+	.product-page {
+		padding-block: clamp(28px, 4vw, 44px) clamp(70px, 9vw, 120px);
+	}
+
+	.breadcrumbs {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 12px;
+		color: var(--color-ink-soft);
+		margin-bottom: clamp(28px, 4vw, 44px);
+		flex-wrap: wrap;
+	}
+
+	.breadcrumbs a:hover {
+		color: var(--color-ink);
+	}
+
+	.breadcrumbs .current {
+		color: var(--color-ink);
+	}
+
+	.product-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: clamp(30px, 5vw, 80px);
+	}
+
+	.product-media {
+		position: relative;
+		aspect-ratio: 1 / 1;
+		background: var(--color-bg-alt);
+		overflow: hidden;
+		border-radius: 14px;
+	}
+
+	.product-media img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.badges-top {
+		position: absolute;
+		top: 16px;
+		left: 16px;
+		z-index: 2;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 7px;
+	}
+
+	.badge {
+		display: inline-flex;
+		align-items: center;
+		font-size: 11.5px;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		white-space: nowrap;
+		padding: 5px 12px;
+		background: color-mix(in srgb, var(--color-bg) 88%, transparent);
+		backdrop-filter: blur(2px);
+		color: var(--color-ink);
+		border: 1px solid var(--color-line);
+		border-radius: 999px;
+	}
+
+	.product-info {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		padding-top: 8px;
+	}
+
+	.product-info h1 {
+		font-family: var(--font-serif);
+		font-weight: 400;
+		font-size: clamp(28px, 3.2vw, 40px);
+		margin: 8px 0 2px;
+	}
+
+	.product-name {
+		color: var(--color-ink-soft);
+		font-size: 15px;
+		line-height: 1.5;
+		max-width: 44ch;
+		margin-bottom: 18px;
+	}
+
+	.product-price {
+		display: flex;
+		align-items: baseline;
+		gap: 12px;
+		margin-bottom: 22px;
+	}
+
+	.price-now {
+		font-family: var(--font-serif);
+		font-size: 26px;
+	}
+
+	.price-old {
+		font-size: 16px;
+		color: var(--color-ink-soft);
+		text-decoration: line-through;
+	}
+
+	.eur-sign {
+		font-family: var(--font-sans);
+		margin-left: 0.15em;
+	}
+
+	.stock-note {
+		font-size: 13px;
+		color: #b5482f;
+		margin-bottom: 8px;
+	}
+
+	.product-media.is-sold-out img {
+		filter: grayscale(0.6);
+		opacity: 0.55;
+	}
+
+	.badge-soldout {
+		background: var(--color-ink);
+		color: var(--color-bg);
+		border-color: var(--color-ink);
+	}
+
+	.description {
+		margin-top: clamp(64px, 8vw, 96px);
+		padding-top: clamp(36px, 5vw, 52px);
+		border-top: 1px solid var(--color-line);
+	}
+
+	.description .eyebrow {
+		margin-bottom: 22px;
+	}
+
+	.description-body {
+		max-width: 740px;
+	}
+
+	.description-body p {
+		font-family: var(--font-serif);
+		font-size: clamp(18px, 1.7vw, 21px);
+		line-height: 1.65;
+		color: var(--color-ink);
+		max-width: 62ch;
+		margin: 0;
+	}
+
+	.qty-picker {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		margin-bottom: 16px;
+	}
+
+	.qty-picker .qty-btn {
+		width: 30px;
+		height: 30px;
+		border: 1px solid var(--color-line-strong);
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 14px;
+		transition: border-color 0.2s;
+	}
+
+	.qty-picker .qty-btn:hover {
+		border-color: var(--color-ink);
+	}
+
+	.qty-picker span {
+		font-family: var(--font-serif);
+		font-size: 15px;
+		min-width: 1.5ch;
+		text-align: center;
+	}
+
+	.add-to-cart {
+		align-self: flex-start;
+		padding: 15px 40px;
+		background: var(--color-ink);
+		color: var(--color-bg);
+		border-radius: 999px;
+		font-size: 13px;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		transition: opacity 0.2s;
+		margin-bottom: 34px;
+	}
+
+	.add-to-cart:hover {
+		opacity: 0.85;
+	}
+
+	.add-to-cart:disabled {
+		background: var(--color-line-strong);
+		color: var(--color-ink-soft);
+		opacity: 0.7;
+		cursor: not-allowed;
+	}
+
+	.product-meta {
+		border-top: 1px solid var(--color-line);
+		padding-top: 18px;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		max-width: 40ch;
+	}
+
+	.meta-row {
+		display: flex;
+		justify-content: space-between;
+		font-size: 13px;
+		color: var(--color-ink-soft);
+	}
+
+	.meta-row span:last-child {
+		color: var(--color-ink);
+	}
+
+	.related {
+		margin-top: clamp(70px, 9vw, 120px);
+		padding-top: clamp(40px, 6vw, 60px);
+		border-top: 1px solid var(--color-line);
+	}
+
+	.related .eyebrow {
+		margin-bottom: 24px;
+	}
+
+	.related-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: clamp(20px, 2.4vw, 32px);
+	}
+
+	@media (max-width: 900px) {
+		.product-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 720px) {
+		.related-grid {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 16px;
+		}
+	}
+</style>

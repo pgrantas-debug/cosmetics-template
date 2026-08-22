@@ -1,0 +1,192 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Contact — LUMÉ" description="Get in touch with the LUMÉ team.">
+	<div class="container contact-page">
+		<div class="contact-head">
+			<p class="eyebrow">Contact</p>
+			<h1>Say hello.</h1>
+			<p class="contact-lead">Questions about an order, a product, or just want to say hi — we'd love to hear from you.</p>
+		</div>
+
+		<div class="contact-grid">
+			<form class="contact-form" id="contact-form">
+				<label>
+					<span>Name</span>
+					<input type="text" name="name" required autocomplete="name" />
+				</label>
+				<label>
+					<span>Email</span>
+					<input type="email" name="email" required autocomplete="email" />
+				</label>
+				<label>
+					<span>Message</span>
+					<textarea name="message" rows="5" required></textarea>
+				</label>
+				<button type="submit" class="submit-btn">Send message</button>
+				<p class="form-success" id="form-success" hidden>Thanks — we'll get back to you soon. (This form is for demo purposes only.)</p>
+			</form>
+
+			<div class="contact-info">
+				<div class="info-block">
+					<span class="info-heading">Email</span>
+					<a href="mailto:hello@lumecosmetics.com">hello@lumecosmetics.com</a>
+				</div>
+				<div class="info-block">
+					<span class="info-heading">Hours</span>
+					<p>Monday–Friday, 9:00–17:00</p>
+				</div>
+				<div class="info-block">
+					<span class="info-heading">Shipping</span>
+					<p>2–4 business days · free over €99</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</BaseLayout>
+
+<style>
+	.contact-page {
+		padding-block: clamp(28px, 4vw, 44px) clamp(90px, 10vw, 130px);
+	}
+
+	.contact-head {
+		max-width: 60ch;
+		margin-bottom: clamp(40px, 6vw, 64px);
+	}
+
+	.contact-head h1 {
+		font-family: var(--font-serif);
+		font-weight: 400;
+		font-size: clamp(32px, 4.6vw, 54px);
+		margin: 10px 0 12px;
+	}
+
+	.contact-lead {
+		color: var(--color-ink-soft);
+		line-height: 1.6;
+		max-width: 50ch;
+	}
+
+	.contact-grid {
+		display: grid;
+		grid-template-columns: 1.4fr 1fr;
+		gap: clamp(40px, 6vw, 80px);
+		align-items: start;
+	}
+
+	.contact-form {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+		max-width: 480px;
+	}
+
+	.contact-form label {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		font-size: 12px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-ink-soft);
+	}
+
+	.contact-form input,
+	.contact-form textarea {
+		font-family: var(--font-sans);
+		font-size: 15px;
+		color: var(--color-ink);
+		background: transparent;
+		border: none;
+		border-bottom: 1px solid var(--color-line-strong);
+		padding: 10px 0;
+		resize: vertical;
+	}
+
+	.contact-form input:focus,
+	.contact-form textarea:focus {
+		outline: none;
+		border-color: var(--color-ink);
+	}
+
+	.submit-btn {
+		align-self: flex-start;
+		margin-top: 8px;
+		padding: 14px 34px;
+		background: var(--color-ink);
+		color: var(--color-bg);
+		border-radius: 999px;
+		font-size: 13px;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		transition: opacity 0.2s;
+	}
+
+	.submit-btn:hover {
+		opacity: 0.85;
+	}
+
+	.form-success {
+		font-size: 13px;
+		color: var(--color-ink-soft);
+	}
+
+	.contact-info {
+		display: flex;
+		flex-direction: column;
+		gap: 28px;
+		padding: clamp(28px, 3vw, 36px);
+		background: var(--color-bg-alt);
+		border-radius: 14px;
+	}
+
+	.info-block {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	.info-heading {
+		font-size: 11px;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--color-ink-soft);
+	}
+
+	.info-block a {
+		font-size: 15px;
+		transition: opacity 0.2s;
+	}
+
+	.info-block a:hover {
+		opacity: 0.6;
+	}
+
+	.info-block p {
+		margin: 0;
+		font-size: 14.5px;
+		color: var(--color-ink);
+	}
+
+	@media (max-width: 800px) {
+		.contact-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
+
+<script>
+	function initContactForm() {
+		const form = document.getElementById('contact-form') as HTMLFormElement | null;
+		const success = document.getElementById('form-success');
+
+		form?.addEventListener('submit', (e) => {
+			e.preventDefault();
+			form.hidden = true;
+			success?.removeAttribute('hidden');
+		});
+	}
+	initContactForm();
+</script>

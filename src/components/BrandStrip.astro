@@ -1,0 +1,107 @@
+---
+import { BRANDS } from '../data/brands';
+
+// Endless marquee of brand logos — duplicated once so the -50% scroll
+// animation loops seamlessly.
+const loop = [...BRANDS, ...BRANDS];
+---
+
+<section class="brand-strip">
+	<p class="eyebrow">Brands we carry</p>
+
+	<div class="marquee" role="list" aria-label="Brands">
+		<div class="marquee-track">
+			{
+				loop.map((b, i) => (
+					<div class="brand-item" role="listitem" aria-hidden={i >= BRANDS.length}>
+						<a href={`/shop?brand=${b.slug}`} class="brand-link" tabindex={i >= BRANDS.length ? -1 : 0}>
+							<img src={`/images/brands/${b.slug}.webp`} alt={b.name} loading="lazy" width="260" height="130" />
+						</a>
+					</div>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.brand-strip {
+		padding-block: clamp(48px, 6vw, 72px);
+		border-top: 1px solid var(--color-line);
+		border-bottom: 1px solid var(--color-line);
+	}
+
+	.brand-strip .eyebrow {
+		text-align: center;
+		margin-bottom: clamp(28px, 4vw, 40px);
+	}
+
+	.marquee {
+		position: relative;
+		overflow: hidden;
+		mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+		-webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+	}
+
+	.marquee-track {
+		display: flex;
+		align-items: center;
+		width: max-content;
+		animation: brand-scroll 130s linear infinite;
+	}
+
+	.marquee:hover .marquee-track {
+		animation-play-state: paused;
+	}
+
+	.brand-item {
+		flex-shrink: 0;
+		width: clamp(200px, 17vw, 270px);
+		height: 84px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding-inline: clamp(26px, 3.2vw, 46px);
+	}
+
+	.brand-link {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: 100%;
+	}
+
+	.brand-item img {
+		max-width: 100%;
+		max-height: 100%;
+		object-fit: contain;
+		filter: grayscale(1);
+		opacity: 0.5;
+		transition: opacity 0.3s var(--ease), filter 0.3s var(--ease);
+	}
+
+	.brand-link:hover img,
+	.brand-link:focus-visible img {
+		filter: grayscale(0);
+		opacity: 1;
+	}
+
+	@keyframes brand-scroll {
+		from {
+			transform: translateX(0);
+		}
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.marquee-track {
+			animation: none;
+			flex-wrap: wrap;
+			justify-content: center;
+			width: 100%;
+		}
+	}
+</style>

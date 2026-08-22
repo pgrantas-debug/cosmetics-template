@@ -1,0 +1,77 @@
+---
+// A text-only "about the brand" teaser for the homepage — no photography,
+// no named founder. Generic, brand-voice copy about "our team" / "we",
+// which links through to the full /about page.
+---
+
+<section id="about-teaser" class="about-teaser container">
+	<div class="about-teaser-inner">
+		<p class="eyebrow">About LUMÉ</p>
+		<p class="about-teaser-quote">
+			"We test everything we sell — the label matters far less to us than whether a product
+			actually does what it promises."
+		</p>
+		<p class="about-teaser-body">
+			LUMÉ started as a small, opinionated edit of skincare and beauty we'd genuinely recommend
+			to a friend. Every brand on the shelf is chosen by our team, not an algorithm — a
+			collection built slowly, one product that earned its place at a time.
+		</p>
+		<a href="/about" class="about-teaser-link">
+			<span>Read our story</span>
+			<svg width="15" height="10" viewBox="0 0 15 10" fill="none" stroke="currentColor" stroke-width="1.2">
+				<path d="M0 5h13M9 1l4 4-4 4" />
+			</svg>
+		</a>
+	</div>
+</section>
+
+<style>
+	.about-teaser {
+		padding-block: clamp(60px, 9vw, 120px);
+		border-top: 1px solid var(--color-line);
+	}
+
+	.about-teaser-inner {
+		max-width: 680px;
+		margin-inline: auto;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 20px;
+	}
+
+	.about-teaser-quote {
+		font-family: var(--font-serif);
+		font-style: italic;
+		font-size: clamp(22px, 3vw, 32px);
+		line-height: 1.4;
+		margin: 4px 0 0;
+	}
+
+	.about-teaser-body {
+		color: var(--color-ink-soft);
+		line-height: 1.75;
+		max-width: 56ch;
+	}
+
+	.about-teaser-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		font-size: 12px;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		border-bottom: 1px solid var(--color-ink);
+		padding-bottom: 4px;
+		margin-top: 4px;
+	}
+
+	.about-teaser-link svg {
+		transition: transform 0.3s var(--ease);
+	}
+
+	.about-teaser-link:hover svg {
+		transform: translateX(3px);
+	}
+</style>

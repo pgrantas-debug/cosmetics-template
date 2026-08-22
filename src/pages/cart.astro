@@ -1,0 +1,419 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Cart — LUMÉ" description="Review the items in your LUMÉ cart.">
+	<div class="container cart-page">
+		<div class="cart-head">
+			<p class="eyebrow">Cart</p>
+			<h1>Your cart</h1>
+		</div>
+
+		<div id="cart-empty" class="cart-empty" hidden>
+			<span class="cart-empty-icon">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+					<path d="M6 8h12l-1 12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 8z" stroke-linejoin="round" />
+					<path d="M9 8V6a3 3 0 0 1 6 0v2" stroke-linecap="round" />
+				</svg>
+			</span>
+			<p>Your cart is empty.</p>
+			<a href="/shop" class="cta">
+				<span>Discover the collection</span>
+				<svg width="15" height="10" viewBox="0 0 15 10" fill="none" stroke="currentColor" stroke-width="1.2">
+					<path d="M0 5h13M9 1l4 4-4 4" />
+				</svg>
+			</a>
+		</div>
+
+		<div id="cart-content" class="cart-content" hidden>
+			<div class="cart-items-col">
+				<a href="/shop" class="continue-link">
+					<svg width="13" height="9" viewBox="0 0 15 10" fill="none" stroke="currentColor" stroke-width="1.2">
+						<path d="M15 5H2M6 1 2 5l4 4" />
+					</svg>
+					<span>Continue shopping</span>
+				</a>
+				<div class="cart-items" id="cart-items"></div>
+			</div>
+
+			<div class="cart-summary" data-label="Order summary">
+				<div class="summary-row">
+					<span>Subtotal</span>
+					<span id="cart-subtotal">0.00 €</span>
+				</div>
+				<div class="summary-row">
+					<span>Shipping</span>
+					<span id="cart-shipping">—</span>
+				</div>
+				<div class="summary-row summary-total">
+					<span>Total</span>
+					<span id="cart-total">0.00<span class="eur-sign">€</span></span>
+				</div>
+				<button class="checkout-btn" id="checkout-btn" disabled title="Checkout is disabled in this demo template">Checkout</button>
+				<p class="summary-note">Checkout is disabled in this demo template. Free shipping on orders over €99.</p>
+			</div>
+		</div>
+	</div>
+</BaseLayout>
+
+<style>
+	.cart-page {
+		padding-block: clamp(28px, 4vw, 44px) clamp(80px, 9vw, 120px);
+		min-height: 50vh;
+	}
+
+	.cart-head {
+		margin-bottom: clamp(36px, 5vw, 56px);
+	}
+
+	.cart-head h1 {
+		font-family: var(--font-serif);
+		font-weight: 400;
+		font-size: clamp(32px, 4.4vw, 52px);
+		margin: 10px 0 0;
+	}
+
+	.cart-empty {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 22px;
+		padding-block: clamp(50px, 8vw, 80px);
+		color: var(--color-ink-soft);
+	}
+
+	.cart-empty[hidden] {
+		display: none;
+	}
+
+	.cart-empty-icon {
+		width: 52px;
+		height: 52px;
+		border-radius: 50%;
+		border: 1px solid var(--color-line-strong);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--color-ink-soft);
+	}
+
+	.cart-empty p {
+		font-family: var(--font-serif);
+		font-size: clamp(18px, 2vw, 22px);
+		color: var(--color-ink);
+	}
+
+	.cta {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		padding: 14px 34px;
+		border: 1px solid var(--color-ink);
+		border-radius: 999px;
+		font-size: 13px;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--color-ink);
+		transition: background-color 0.3s var(--ease), color 0.3s var(--ease);
+	}
+
+	.cta:hover {
+		background: var(--color-ink);
+		color: var(--color-bg);
+	}
+
+	.cart-content {
+		display: grid;
+		grid-template-columns: 1.6fr 1fr;
+		gap: clamp(40px, 5vw, 70px);
+		align-items: start;
+	}
+
+	.cart-content[hidden] {
+		display: none;
+	}
+
+	.cart-items-col {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.continue-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		align-self: flex-start;
+		font-size: 12px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-ink-soft);
+		margin-bottom: 18px;
+		transition: color 0.2s;
+	}
+
+	.continue-link svg {
+		flex-shrink: 0;
+		transition: transform 0.2s var(--ease);
+	}
+
+	.continue-link:hover {
+		color: var(--color-ink);
+	}
+
+	.continue-link:hover svg {
+		transform: translateX(-3px);
+	}
+
+	.cart-items {
+		display: flex;
+		flex-direction: column;
+		border-top: 1px solid var(--color-line);
+	}
+
+	:global(.cart-item) {
+		display: grid;
+		grid-template-columns: 96px 1fr auto;
+		gap: 22px;
+		align-items: center;
+		padding-block: 26px;
+		border-bottom: 1px solid var(--color-line);
+		transition: opacity 0.2s var(--ease);
+	}
+
+	:global(.cart-item img) {
+		width: 96px;
+		height: 96px;
+		object-fit: cover;
+		background: var(--color-bg-alt);
+		border-radius: 10px;
+	}
+
+	:global(.item-name) {
+		font-size: 14.5px;
+		line-height: 1.4;
+		max-width: 40ch;
+	}
+
+	:global(.item-brand) {
+		font-size: 11px;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--color-ink-soft);
+		margin-bottom: 5px;
+	}
+
+	:global(.item-qty) {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-top: 14px;
+	}
+
+	:global(.item-qty span) {
+		font-family: var(--font-serif);
+		font-size: 15px;
+		min-width: 1.2ch;
+		text-align: center;
+	}
+
+	:global(.qty-btn) {
+		width: 24px;
+		height: 24px;
+		border: 1px solid var(--color-line-strong);
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 13px;
+		transition: border-color 0.2s;
+	}
+
+	:global(.qty-btn:hover) {
+		border-color: var(--color-ink);
+	}
+
+	:global(.item-right) {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 10px;
+		text-align: right;
+	}
+
+	:global(.item-price) {
+		font-family: var(--font-serif);
+		font-size: 16px;
+	}
+
+	:global(.eur-sign) {
+		font-family: var(--font-sans);
+		margin-left: 0.15em;
+	}
+
+	:global(.item-remove) {
+		font-size: 11.5px;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--color-ink-soft);
+		border-bottom: 1px solid var(--color-line-strong);
+	}
+
+	:global(.item-remove:hover) {
+		color: var(--color-ink);
+	}
+
+	.cart-summary {
+		background: var(--color-bg-alt);
+		padding: clamp(28px, 3.4vw, 38px);
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		position: sticky;
+		top: calc(var(--nav-h) + 20px);
+	}
+
+	.cart-summary::before {
+		content: attr(data-label);
+		font-size: 11px;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--color-ink-soft);
+		margin-bottom: 4px;
+	}
+
+	.summary-row {
+		display: flex;
+		justify-content: space-between;
+		font-size: 14px;
+		color: var(--color-ink-soft);
+	}
+
+	.summary-total {
+		font-size: 19px;
+		color: var(--color-ink);
+		font-family: var(--font-serif);
+		border-top: 1px solid var(--color-line);
+		padding-top: 16px;
+		margin-top: 4px;
+	}
+
+	.checkout-btn {
+		margin-top: 12px;
+		padding: 16px;
+		background: var(--color-ink);
+		color: var(--color-bg);
+		border-radius: 999px;
+		font-size: 13px;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		transition: opacity 0.2s, transform 0.2s var(--ease);
+	}
+
+	.checkout-btn:disabled {
+		opacity: 0.45;
+		cursor: not-allowed;
+	}
+
+	.summary-note {
+		font-size: 12px;
+		color: var(--color-ink-soft);
+		text-align: center;
+	}
+
+	@media (max-width: 800px) {
+		.cart-content {
+			grid-template-columns: 1fr;
+		}
+		.cart-summary {
+			position: static;
+		}
+	}
+</style>
+
+<script>
+	import { getCart, updateQty, removeFromCart, getCartTotal } from '../scripts/cart.js';
+
+	function initCartPage() {
+		const emptyEl = document.getElementById('cart-empty');
+		const contentEl = document.getElementById('cart-content');
+		const itemsEl = document.getElementById('cart-items');
+		const subtotalEl = document.getElementById('cart-subtotal');
+		const shippingEl = document.getElementById('cart-shipping');
+		const totalEl = document.getElementById('cart-total');
+
+		const fmtNum = (n: number) => n.toFixed(2);
+		const fmt = (n: number) => fmtNum(n) + ' €';
+		const fmtHtml = (n: number) => `${fmtNum(n)}<span class="eur-sign">€</span>`;
+
+		function render() {
+			const items = getCart();
+
+			if (items.length === 0) {
+				emptyEl?.removeAttribute('hidden');
+				contentEl?.setAttribute('hidden', '');
+				return;
+			}
+
+			emptyEl?.setAttribute('hidden', '');
+			contentEl?.removeAttribute('hidden');
+
+			if (itemsEl) {
+				itemsEl.innerHTML = items
+					.map((item: any) => {
+						const lineTotal = item.price * item.qty;
+						return `
+					<div class="cart-item" data-slug="${item.slug}">
+						<img src="${item.image}" alt="${item.name}" width="96" height="96" />
+						<div>
+							<p class="item-brand">${item.brand ?? ''}</p>
+							<p class="item-name">${item.name}</p>
+							<div class="item-qty">
+								<button class="qty-btn" data-qty="dec" aria-label="Decrease quantity">−</button>
+								<span>${item.qty}</span>
+								<button class="qty-btn" data-qty="inc" aria-label="Increase quantity">+</button>
+							</div>
+						</div>
+						<div class="item-right">
+							<span class="item-price">${fmtHtml(lineTotal)}</span>
+							<button class="item-remove" data-remove>Remove</button>
+						</div>
+					</div>
+				`;
+					})
+					.join('');
+			}
+
+			const subtotal = getCartTotal();
+			const freeShipping = subtotal >= 99;
+			if (subtotalEl) subtotalEl.textContent = fmt(subtotal);
+			if (shippingEl) shippingEl.textContent = freeShipping ? 'Free' : '4.90 €';
+			if (totalEl) totalEl.innerHTML = fmtHtml(subtotal + (freeShipping ? 0 : 4.9));
+		}
+
+		itemsEl?.addEventListener('click', (e) => {
+			const target = e.target as HTMLElement;
+			const row = target.closest<HTMLElement>('.cart-item');
+			if (!row) return;
+			const slug = row.dataset.slug!;
+			const items = getCart();
+			const current = items.find((i: any) => i.slug === slug);
+			if (!current) return;
+
+			if (target.closest('[data-qty="inc"]')) {
+				updateQty(slug, current.qty + 1);
+				render();
+			} else if (target.closest('[data-qty="dec"]')) {
+				updateQty(slug, current.qty - 1);
+				render();
+			} else if (target.closest('[data-remove]')) {
+				removeFromCart(slug);
+				render();
+			}
+		});
+
+		document.addEventListener('cart:updated', () => render());
+		render();
+	}
+
+	initCartPage();
+</script>
