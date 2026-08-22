@@ -1,100 +1,100 @@
 ---
-// No stock hero photography ships with this template — the hero panel is
-// built entirely from CSS (a soft gradient) plus one product photo from the
-// catalog, so the template stays fully self-contained.
+// Hero.astro
+// hero.png already has the "LUMÉ" wordmark composited into the photo itself
+// (same approach as the reference site), so no extra headline text is drawn
+// on top of the image — that would just duplicate it. All copy (eyebrow, CTA,
+// quick links) lives in the clean space below the photo instead.
 ---
 
 <section class="hero">
-	<div class="container hero-grid">
-		<div class="hero-copy">
-			<p class="eyebrow">Curated Skincare &amp; Beauty</p>
-			<h1>Beauty, <em>thoughtfully</em> chosen.</h1>
-			<p class="hero-lead">
-				Forty pieces from independent labs and studios we trust — skincare, makeup, hair and
-				fragrance, each one chosen for how it actually performs.
-			</p>
-			<div class="hero-actions">
-				<a href="/shop" class="cta">
-					<span>Discover the collection</span>
-					<svg width="15" height="10" viewBox="0 0 15 10" fill="none" stroke="currentColor" stroke-width="1.2">
-						<path d="M0 5h13M9 1l4 4-4 4" />
-					</svg>
-				</a>
-				<nav class="quick-links" aria-label="Quick category links">
-					<a href="/shop?category=veido-prieziura">Face</a>
-					<a href="/shop?category=plauku-prieziuros-priemones">Hair</a>
-					<a href="/shop?category=kvepalai">Perfume</a>
-					<a href="/shop">Everything</a>
-				</nav>
-			</div>
-		</div>
+	<div class="hero-media">
+		<picture>
+			<source media="(max-width: 640px)" srcset="/images/mobilehero.png" width="1350" height="1690" />
+			<img src="/images/hero.png" alt="LUMÉ — thoughtfully chosen beauty" width="1920" height="1080" fetchpriority="high" />
+		</picture>
 
-		<div class="hero-visual">
-			<div class="hero-visual-glow">
-				<img
-					src="/images/products/emmanuelle-jane-paris-harmonie-edp.webp"
-					alt=""
-					width="718"
-					height="718"
-					fetchpriority="high"
-				/>
-			</div>
-		</div>
+		<a href="#featured" class="scroll-cue" aria-label="Scroll down">
+			<span class="scroll-line"></span>
+			<span>Scroll</span>
+		</a>
 	</div>
 
-	<a href="#featured" class="scroll-cue" aria-label="Scroll down">
-		<span class="scroll-line"></span>
-		<span>Scroll</span>
-	</a>
+	<div class="hero-body container">
+		<p class="eyebrow hero-eyebrow">Curated Skincare &amp; Beauty</p>
+
+		<div class="hero-actions">
+			<a href="/shop" class="cta">
+				<span>Discover the collection</span>
+				<svg width="15" height="10" viewBox="0 0 15 10" fill="none" stroke="currentColor" stroke-width="1.2">
+					<path d="M0 5h13M9 1l4 4-4 4" />
+				</svg>
+			</a>
+
+			<nav class="quick-links" aria-label="Quick category links">
+				<a href="/shop?category=plauku-prieziuros-priemones">Hair</a>
+				<a href="/shop?category=kuno-prieziura">Body</a>
+				<a href="/shop?category=veido-prieziura">Face</a>
+				<a href="/shop">Everything</a>
+			</nav>
+		</div>
+	</div>
 </section>
 
 <style>
 	.hero {
 		position: relative;
-		background: linear-gradient(180deg, #f5efe4 0%, var(--color-bg) 78%);
-		padding-top: calc(var(--nav-h) + clamp(20px, 5vw, 60px));
-		padding-bottom: clamp(50px, 7vw, 90px);
-	}
-
-	.hero-grid {
-		display: grid;
-		grid-template-columns: 1.05fr 0.95fr;
-		gap: clamp(30px, 5vw, 70px);
-		align-items: center;
-	}
-
-	.hero-copy {
 		display: flex;
 		flex-direction: column;
-		align-items: flex-start;
-		gap: 20px;
+		background: var(--color-bg);
 	}
 
-	.hero-copy h1 {
-		font-family: var(--font-serif);
-		font-weight: 400;
-		font-size: clamp(38px, 5.4vw, 68px);
-		line-height: 1.08;
-		margin: 4px 0 0;
+	/* Photo shown at full width, natural ratio, no cropping — the fixed
+	   header floats above it with no background, so nothing draws a hard
+	   line between the header and the hero. */
+	.hero-media {
+		position: relative;
+		width: 100%;
+		line-height: 0;
 	}
 
-	.hero-copy h1 em {
-		font-style: italic;
+	.hero-media img {
+		width: 100%;
+		height: auto;
+		display: block;
 	}
 
-	.hero-lead {
-		color: var(--color-ink-soft);
-		font-size: clamp(15px, 1.2vw, 17px);
-		line-height: 1.65;
-		max-width: 46ch;
+	/* Soft fade from the bottom of the photo into the page background —
+	   without it there'd be a hard edge between the greyish photo and the
+	   ivory page background. */
+	.hero-media::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: 14%;
+		background: linear-gradient(to bottom, transparent, var(--color-bg));
+		pointer-events: none;
+	}
+
+	.hero-body {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		gap: 22px;
+		padding-block: clamp(20px, 3vw, 32px) clamp(32px, 5vw, 56px);
+	}
+
+	.hero-eyebrow {
+		max-width: 30ch;
 	}
 
 	.hero-actions {
 		display: flex;
 		flex-direction: column;
-		align-items: flex-start;
-		gap: clamp(20px, 3vw, 28px);
-		margin-top: 6px;
+		align-items: center;
+		gap: clamp(20px, 3vw, 30px);
 	}
 
 	.cta {
@@ -128,6 +128,7 @@
 		align-items: center;
 		gap: clamp(14px, 2.4vw, 26px);
 		flex-wrap: wrap;
+		justify-content: center;
 	}
 
 	.quick-links a {
@@ -154,33 +155,6 @@
 
 	.quick-links a:hover {
 		color: var(--color-ink);
-	}
-
-	.hero-visual {
-		display: flex;
-		justify-content: center;
-	}
-
-	.hero-visual-glow {
-		position: relative;
-		width: 100%;
-		max-width: 460px;
-		aspect-ratio: 1 / 1;
-		border-radius: 28px;
-		background:
-			radial-gradient(60% 55% at 50% 40%, #f4e7c8 0%, transparent 72%),
-			var(--color-bg-alt);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 14%;
-	}
-
-	.hero-visual-glow img {
-		width: 100%;
-		height: 100%;
-		object-fit: contain;
-		filter: drop-shadow(0 22px 30px rgba(26, 24, 22, 0.16));
 	}
 
 	.scroll-cue {
@@ -224,29 +198,6 @@
 		60%,
 		100% {
 			top: 100%;
-		}
-	}
-
-	@media (max-width: 860px) {
-		.hero-grid {
-			grid-template-columns: 1fr;
-			text-align: center;
-		}
-
-		.hero-copy {
-			align-items: center;
-		}
-
-		.hero-actions {
-			align-items: center;
-		}
-
-		.hero-visual {
-			order: -1;
-		}
-
-		.hero-visual-glow {
-			max-width: 300px;
 		}
 	}
 
