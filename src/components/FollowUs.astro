@@ -1,20 +1,49 @@
 ---
-// Generic "follow us" visual placeholder — a small grid of product photos
-// from the catalog, no real social links (this is a fictional brand).
-import { products } from '../data/products';
-
-const featured = products.slice(0, 4);
+// Generic "follow us" section — social platform icons instead of photos,
+// since this is a fictional demo brand with no real social accounts to show
+// off. Icons are inline SVGs (no external icon package needed) styled to
+// match the site's monochrome, minimal aesthetic.
+const socials = [
+	{
+		name: 'Instagram',
+		href: '#',
+		color: '#d6336c',
+		path: 'M12 2c-2.72 0-3.06.012-4.13.06-1.07.05-1.8.22-2.44.47-.66.26-1.22.6-1.78 1.16-.56.56-.9 1.12-1.16 1.78-.25.64-.42 1.37-.47 2.44C2 8.94 2 9.28 2 12s.012 3.06.06 4.13c.05 1.07.22 1.8.47 2.44.26.66.6 1.22 1.16 1.78.56.56 1.12.9 1.78 1.16.64.25 1.37.42 2.44.47C8.94 22 9.28 22 12 22s3.06-.012 4.13-.06c1.07-.05 1.8-.22 2.44-.47.66-.26 1.22-.6 1.78-1.16.56-.56.9-1.12 1.16-1.78.25-.64.42-1.37.47-2.44.048-1.07.06-1.41.06-4.13s-.012-3.06-.06-4.13c-.05-1.07-.22-1.8-.47-2.44-.26-.66-.6-1.22-1.16-1.78-.56-.56-1.12-.9-1.78-1.16-.64-.25-1.37-.42-2.44-.47C15.06 2.012 14.72 2 12 2Zm0 1.8c2.67 0 2.99.01 4.04.058.976.045 1.505.207 1.858.344.467.182.8.399 1.15.748.35.35.566.683.748 1.15.137.353.3.882.344 1.857.048 1.05.058 1.37.058 4.04s-.01 2.99-.058 4.04c-.045.976-.207 1.505-.344 1.858a3.1 3.1 0 0 1-.748 1.15 3.1 3.1 0 0 1-1.15.748c-.353.137-.882.3-1.857.344-1.05.048-1.37.058-4.04.058s-2.99-.01-4.04-.058c-.976-.045-1.505-.207-1.858-.344a3.1 3.1 0 0 1-1.15-.748 3.1 3.1 0 0 1-.748-1.15c-.137-.353-.3-.882-.344-1.857-.048-1.05-.058-1.37-.058-4.04s.01-2.99.058-4.04c.045-.976.207-1.505.344-1.858.182-.467.399-.8.748-1.15a3.1 3.1 0 0 1 1.15-.748c.353-.137.882-.3 1.857-.344 1.05-.048 1.37-.058 4.04-.058ZM12 6.865A5.135 5.135 0 1 0 12 17.135 5.135 5.135 0 0 0 12 6.865Zm0 8.47a3.335 3.335 0 1 1 0-6.67 3.335 3.335 0 0 1 0 6.67Zm5.338-8.673a1.2 1.2 0 1 1-2.4 0 1.2 1.2 0 0 1 2.4 0Z',
+	},
+	{
+		name: 'Facebook',
+		href: '#',
+		color: '#1877f2',
+		path: 'M14.5 22v-8.4h2.82l.42-3.27h-3.24V8.24c0-.95.26-1.59 1.62-1.59h1.73V3.73C17.55 3.68 16.56 3.6 15.4 3.6c-2.42 0-4.08 1.48-4.08 4.19v2.54H8.5v3.27h2.82V22h3.18Z',
+	},
+	{
+		name: 'X',
+		href: '#',
+		color: '#1a1a1a',
+		path: 'M13.53 10.62 20.4 2.7h-2.3l-5.96 6.93L7.4 2.7H2l7.2 10.47L2 21.3h2.3l6.29-7.32 5.02 7.32h5.4l-7.48-10.68Zm-2.23 2.59-.73-1.04L4.79 4.37h2.36l4.7 6.72.73 1.04 6.11 8.74h-2.36l-4.99-7.66Z',
+	},
+	{
+		name: 'TikTok',
+		href: '#',
+		color: '#ee1d52',
+		path: 'M16.6 2h-3.14v13.6a2.86 2.86 0 1 1-2.02-2.73V9.6a6.05 6.05 0 1 0 5.16 5.98V8.5a7.6 7.6 0 0 0 4.4 1.4V6.76A4.46 4.46 0 0 1 16.6 2Z',
+	},
+];
 ---
 
 <section class="follow">
 	<div class="container follow-inner">
 		<p class="eyebrow">@lumecosmetics</p>
 		<h2>Follow along</h2>
-		<div class="follow-grid">
-			{featured.map((p) => (
-				<div class="follow-tile">
-					<img src={p.image} alt={p.name} loading="lazy" width="300" height="300" />
-				</div>
+		<p class="follow-lead">Behind-the-scenes, new arrivals and restock alerts — find us on your platform of choice.</p>
+
+		<div class="follow-socials">
+			{socials.map((s) => (
+				<a href={s.href} class="follow-social" style={`--brand: ${s.color}`} aria-label={s.name} target="_blank" rel="noopener">
+					<svg width="56" height="56" viewBox="0 0 24 24" fill="currentColor">
+						<path d={s.path} />
+					</svg>
+				</a>
 			))}
 		</div>
 	</div>
@@ -42,37 +71,66 @@ const featured = products.slice(0, 4);
 		margin: 0;
 	}
 
-	.follow-grid {
-		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		gap: 12px;
-		width: 100%;
-		max-width: 640px;
-		margin-top: 20px;
+	.follow-lead {
+		color: var(--color-ink-soft);
+		line-height: 1.6;
+		max-width: 42ch;
 	}
 
-	.follow-tile {
-		aspect-ratio: 1 / 1;
-		border-radius: 10px;
-		overflow: hidden;
+	.follow-socials {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: clamp(20px, 3.4vw, 34px);
+		margin-top: 24px;
+	}
+
+	.follow-social {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: clamp(90px, 11vw, 140px);
+		height: clamp(90px, 11vw, 140px);
+		border-radius: 50%;
+		color: var(--color-ink);
 		background: var(--color-bg);
+		box-shadow:
+			0 10px 24px rgba(26, 24, 22, 0.07),
+			0 2px 6px rgba(26, 24, 22, 0.05),
+			inset 0 0 0 1px var(--color-line);
+		transition: background-color 0.3s var(--ease), color 0.3s var(--ease), transform 0.3s var(--ease),
+			box-shadow 0.3s var(--ease);
 	}
 
-	.follow-tile img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		transition: transform 0.5s var(--ease);
+	.follow-social svg {
+		width: clamp(34px, 4vw, 56px);
+		height: clamp(34px, 4vw, 56px);
+		transition: transform 0.3s var(--ease);
 	}
 
-	.follow-tile:hover img {
-		transform: scale(1.06);
+	.follow-social:hover {
+		background: var(--brand);
+		color: #fff;
+		transform: translateY(-4px) scale(1.04);
+		box-shadow:
+			0 16px 28px -6px color-mix(in srgb, var(--brand) 45%, transparent),
+			inset 0 0 0 1px transparent;
+	}
+
+	.follow-social:hover svg {
+		transform: scale(1.08);
 	}
 
 	@media (max-width: 560px) {
-		.follow-grid {
-			grid-template-columns: repeat(4, 1fr);
-			gap: 8px;
+		.follow-social {
+			width: 78px;
+			height: 78px;
+		}
+
+		.follow-social svg {
+			width: 30px;
+			height: 30px;
 		}
 	}
 </style>
