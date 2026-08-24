@@ -1,0 +1,484 @@
+---
+// A static demo of a customer account page — no real auth, orders or
+// addresses are wired up (this is a template with no backend/database), just
+// realistic-looking sample content to show what an account area could look
+// like, styled to match the rest of the site.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { products } from '../data/products';
+
+const orders = [
+	{
+		id: 'LUME-10482',
+		date: 'August 12, 2026',
+		status: 'Delivered',
+		items: [products[3], products[11]],
+	},
+	{
+		id: 'LUME-10357',
+		date: 'July 2, 2026',
+		status: 'Delivered',
+		items: [products[7]],
+	},
+	{
+		id: 'LUME-10201',
+		date: 'May 21, 2026',
+		status: 'Delivered',
+		items: [products[19], products[24], products[2]],
+	},
+];
+
+const orderTotal = (items: typeof products) => items.reduce((sum, p) => sum + p.price, 0);
+---
+
+<BaseLayout title="My Account — LUMÉ" description="A demo customer account page for the LUMÉ template.">
+	<div class="container account-page">
+		<div class="account-head">
+			<p class="eyebrow">My Account</p>
+			<h1>Welcome back, Elena.</h1>
+			<p class="account-note">
+				This is a demo account page — sample orders and a saved wishlist, showing what a signed-in customer view
+				could look like. No real login, orders or data are connected.
+			</p>
+		</div>
+
+		<div class="account-grid">
+			<aside class="account-side">
+				<div class="account-card">
+					<div class="avatar">EM</div>
+					<p class="account-name">Elena Mikalauskaitė</p>
+					<p class="account-email">elena@example.com</p>
+					<p class="account-since">Member since May 2026</p>
+				</div>
+
+				<nav class="account-nav" aria-label="Account sections">
+					<a href="#orders">Order history</a>
+					<a href="#wishlist">Wishlist</a>
+					<a href="#details">Account details</a>
+					<a href="/shop" class="sign-out">Sign out</a>
+				</nav>
+			</aside>
+
+			<div class="account-main">
+				<section class="account-section" id="orders">
+					<h2>Order history</h2>
+					<div class="orders-list">
+						{orders.map((order) => (
+							<div class="order-card">
+								<div class="order-card-head">
+									<div>
+										<p class="order-id">{order.id}</p>
+										<p class="order-date">{order.date}</p>
+									</div>
+									<span class="order-status">{order.status}</span>
+								</div>
+								<div class="order-items">
+									{order.items.map((p) => (
+										<img src={p.image} alt={p.name} width="56" height="56" loading="lazy" />
+									))}
+								</div>
+								<div class="order-card-foot">
+									<span>{order.items.length} item{order.items.length > 1 ? 's' : ''}</span>
+									<span class="order-total">{orderTotal(order.items).toFixed(2)}<span class="eur-sign">€</span></span>
+								</div>
+							</div>
+						))}
+					</div>
+				</section>
+
+				<section class="account-section" id="wishlist">
+					<h2>Wishlist</h2>
+					<p class="wishlist-empty" id="wishlist-empty" hidden>
+						Nothing saved yet — tap the heart on any product card to add it here.
+					</p>
+					<div class="wishlist-grid" id="wishlist-grid">
+						{products.map((p) => (
+							<div class="wishlist-item" data-wishlist-item={p.slug} hidden>
+								<ProductCard
+									name={p.name}
+									brand={p.brand}
+									price={p.price}
+									oldPrice={p.oldPrice}
+									discount={p.discount}
+									image={p.image}
+									slug={p.slug}
+									categoryLabel={p.categoryLabel}
+									tags={p.tags}
+									stockQty={p.stockQty}
+									stockStatus={p.stockStatus}
+								/>
+							</div>
+						))}
+					</div>
+				</section>
+
+				<section class="account-section" id="details">
+					<h2>Account details</h2>
+					<form class="details-form">
+						<label>
+							<span>Full name</span>
+							<input type="text" value="Elena Mikalauskaitė" autocomplete="name" />
+						</label>
+						<label>
+							<span>Email</span>
+							<input type="email" value="elena@example.com" autocomplete="email" />
+						</label>
+						<label>
+							<span>Phone</span>
+							<input type="tel" value="+370 600 00000" autocomplete="tel" />
+						</label>
+						<label class="full-row">
+							<span>Shipping address</span>
+							<input type="text" value="Gedimino pr. 12, Vilnius, Lithuania" autocomplete="street-address" />
+						</label>
+						<button type="submit" class="save-btn">Save changes</button>
+						<p class="form-note">Demo form — changes aren't saved anywhere.</p>
+					</form>
+				</section>
+			</div>
+		</div>
+	</div>
+</BaseLayout>
+
+<style>
+	.account-page {
+		padding-block: clamp(28px, 4vw, 44px) clamp(90px, 10vw, 130px);
+	}
+
+	.account-head {
+		max-width: 62ch;
+		margin-bottom: clamp(40px, 6vw, 64px);
+	}
+
+	.account-head h1 {
+		font-family: var(--font-serif);
+		font-weight: 400;
+		font-size: clamp(32px, 4.6vw, 54px);
+		margin: 10px 0 12px;
+	}
+
+	.account-note {
+		color: var(--color-ink-soft);
+		line-height: 1.6;
+		max-width: 56ch;
+		font-size: 13.5px;
+	}
+
+	.account-grid {
+		display: grid;
+		grid-template-columns: 0.8fr 2fr;
+		gap: clamp(36px, 5vw, 64px);
+		align-items: start;
+	}
+
+	.account-side {
+		position: sticky;
+		top: calc(var(--nav-h) + 24px);
+		display: flex;
+		flex-direction: column;
+		gap: 22px;
+	}
+
+	.account-card {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 4px;
+		padding: clamp(24px, 3vw, 30px);
+		background: var(--color-bg-alt);
+		border-radius: 14px;
+	}
+
+	.avatar {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 52px;
+		height: 52px;
+		border-radius: 50%;
+		background: var(--color-ink);
+		color: var(--color-bg);
+		font-family: var(--font-serif);
+		font-size: 17px;
+		margin-bottom: 12px;
+	}
+
+	.account-name {
+		font-size: 15px;
+	}
+
+	.account-email,
+	.account-since {
+		font-size: 12.5px;
+		color: var(--color-ink-soft);
+	}
+
+	.account-nav {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.account-nav a {
+		font-size: 13px;
+		letter-spacing: 0.03em;
+		padding-block: 11px;
+		border-bottom: 1px solid var(--color-line);
+		color: var(--color-ink-soft);
+		transition: color 0.2s, padding-left 0.2s var(--ease);
+	}
+
+	.account-nav a:hover {
+		color: var(--color-ink);
+		padding-left: 4px;
+	}
+
+	.account-nav .sign-out {
+		margin-top: 6px;
+		border-bottom: none;
+		color: var(--color-ink-soft);
+	}
+
+	.account-main {
+		display: flex;
+		flex-direction: column;
+		gap: clamp(48px, 6vw, 72px);
+		min-width: 0;
+	}
+
+	.account-section h2 {
+		font-family: var(--font-serif);
+		font-weight: 400;
+		font-size: clamp(21px, 2.4vw, 27px);
+		margin: 0 0 20px;
+		scroll-margin-top: calc(var(--nav-h) + 20px);
+	}
+
+	.orders-list {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+	}
+
+	.order-card {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 16px 24px;
+		padding: 18px clamp(18px, 2.4vw, 26px);
+		border: 1px solid var(--color-line);
+		border-radius: 12px;
+	}
+
+	.order-card-head {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		min-width: 170px;
+	}
+
+	.order-id {
+		font-size: 13.5px;
+	}
+
+	.order-date {
+		font-size: 12px;
+		color: var(--color-ink-soft);
+	}
+
+	.order-status {
+		font-size: 10.5px;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		padding: 4px 10px;
+		border-radius: 999px;
+		background: var(--color-bg-alt);
+		color: var(--color-ink-soft);
+	}
+
+	.order-items {
+		display: flex;
+		gap: 8px;
+	}
+
+	.order-items img {
+		width: 44px;
+		height: 44px;
+		object-fit: cover;
+		border-radius: 8px;
+		background: var(--color-bg-alt);
+	}
+
+	.order-card-foot {
+		display: flex;
+		align-items: baseline;
+		gap: 10px;
+		margin-left: auto;
+		font-size: 13px;
+		color: var(--color-ink-soft);
+	}
+
+	.order-total {
+		font-family: var(--font-serif);
+		font-size: 16px;
+		color: var(--color-ink);
+	}
+
+	.eur-sign {
+		font-family: var(--font-sans);
+		margin-left: 0.1em;
+	}
+
+	.wishlist-empty {
+		font-size: 13.5px;
+		color: var(--color-ink-soft);
+		padding: clamp(24px, 3vw, 32px);
+		background: var(--color-bg-alt);
+		border-radius: 14px;
+	}
+
+	.wishlist-empty[hidden] {
+		display: none;
+	}
+
+	.wishlist-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: clamp(20px, 2.4vw, 30px);
+	}
+
+	.wishlist-item[hidden] {
+		display: none;
+	}
+
+	.details-form {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 20px 24px;
+		max-width: 620px;
+	}
+
+	.details-form label {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		font-size: 12px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-ink-soft);
+	}
+
+	.details-form .full-row {
+		grid-column: 1 / -1;
+	}
+
+	.details-form input {
+		font-family: var(--font-sans);
+		font-size: 15px;
+		color: var(--color-ink);
+		background: transparent;
+		border: none;
+		border-bottom: 1px solid var(--color-line-strong);
+		padding: 10px 0;
+	}
+
+	.details-form input:focus {
+		outline: none;
+		border-color: var(--color-ink);
+	}
+
+	.save-btn {
+		grid-column: 1 / -1;
+		justify-self: flex-start;
+		margin-top: 4px;
+		padding: 14px 34px;
+		background: var(--color-ink);
+		color: var(--color-bg);
+		border-radius: 999px;
+		font-size: 13px;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		transition: opacity 0.2s;
+	}
+
+	.save-btn:hover {
+		opacity: 0.85;
+	}
+
+	.form-note {
+		grid-column: 1 / -1;
+		font-size: 12px;
+		color: var(--color-ink-soft);
+		margin-top: -8px;
+	}
+
+	@media (max-width: 900px) {
+		.account-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.account-side {
+			position: static;
+			flex-direction: row;
+			flex-wrap: wrap;
+		}
+
+		.account-nav {
+			flex-direction: row;
+			flex-wrap: wrap;
+			gap: 4px 18px;
+		}
+
+		.account-nav a {
+			border-bottom: none;
+			padding-block: 4px;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.wishlist-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.details-form {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
+
+<script>
+	import { getWishlist } from '../scripts/wishlist.js';
+
+	function renderWishlist() {
+		const saved = getWishlist();
+		const grid = document.getElementById('wishlist-grid');
+		const empty = document.getElementById('wishlist-empty');
+		if (!grid) return;
+
+		let shown = 0;
+		grid.querySelectorAll<HTMLElement>('[data-wishlist-item]').forEach((el) => {
+			const match = saved.includes(el.dataset.wishlistItem ?? '');
+			el.hidden = !match;
+			if (match) shown++;
+		});
+
+		if (empty) empty.hidden = shown > 0;
+	}
+
+	renderWishlist();
+	document.addEventListener('wishlist:updated', renderWishlist);
+
+	function initAccountForm() {
+		const form = document.querySelector<HTMLFormElement>('.details-form');
+		form?.addEventListener('submit', (e) => {
+			e.preventDefault();
+			const btn = form.querySelector<HTMLButtonElement>('.save-btn');
+			if (!btn) return;
+			const original = btn.textContent;
+			btn.textContent = 'Saved ✓';
+			setTimeout(() => {
+				btn.textContent = original;
+			}, 1600);
+		});
+	}
+	initAccountForm();
+</script>
